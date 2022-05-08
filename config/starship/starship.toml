@@ -1,0 +1,29 @@
+#
+
+right_format = "$status $time"
+
+[directory]
+truncation_length = 999
+truncate_to_repo = false
+
+[hostname]
+format = "[$hostname]($style) "
+
+[username]
+# format = '[$user]($style) '
+
+[package]
+disabled = true
+
+##########################################
+
+[status]
+disabled = false
+
+[memory_usage]
+format = '$symbol[$ram( | $swap)]($style) '
+threshold = 0
+disabled = true
+
+[time]
+disabled = false

@@ -1,0 +1,50 @@
+#!/usr/bin/env zsh
+
+# Usage: time ZSH_PROFILE=1 zsh -i -c exit
+[[ $ZSH_PROFILE == "1" ]] && zmodload zsh/zprof
+
+DOTFILES_DIR="$(dirname "$(dirname "$(readlink -f "${(%):-%x}")")")"
+ZSHRC_DIR="${DOTFILES_DIR}/zsh"
+
+# Force to use emacs mode instead of depending on $VISUAL or $EDITOR
+bindkey -e
+
+source "${ZSHRC_DIR}/function.zsh"
+
+if executable nvim; then
+  export VISUAL="nvim"
+  export EDITOR="nvim"
+else
+  export VISUAL="vim"
+  export EDITOR="vim"
+fi
+
+# History
+# https://www.soberkoder.com/better-zsh-history/
+export HISTFILE="$HOME/.zsh_history"
+export HISTSIZE=100000
+export SAVEHIST=100000
+setopt INC_APPEND_HISTORY
+setopt EXTENDED_HISTORY
+setopt HIST_FIND_NO_DUPS
+
+# Let Ctrl-W, Alt-backspace work like bash style and delete a word at once
+autoload -U select-word-style
+select-word-style bash
+
+source "${ZSHRC_DIR}/alias.zsh"
+source "${ZSHRC_DIR}/plugin.zsh"
+
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
+
+typeset -U path fpath
+
+# Completion
+# https://unix.stackexchange.com/questions/33255/how-to-define-and-load-your-own-shell-function-in-zsh
+fpath=("${ZSHRC_DIR}/completion" "${fpath[@]}")
+
+autoload -Uz compinit
+zsh-defer compinit
+
+[[ $ZSH_PROFILE == "1" ]] && zprof
