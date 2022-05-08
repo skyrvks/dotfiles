@@ -45,6 +45,6 @@ typeset -U path fpath
 fpath=("${ZSHRC_DIR}/completion" "${fpath[@]}")
 
 autoload -Uz compinit
-zsh-defer compinit
+zsh-defer compinit 2>/dev/null || compinit
 
 [[ $ZSH_PROFILE == "1" ]] && zprof

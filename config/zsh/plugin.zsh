@@ -23,7 +23,11 @@ zb() { cd "$(find_vcs_root)" }
 # Starship
 export STARSHIP_CONFIG="${DOTFILES_DIR}/starship/starship.toml"
 
-eval "$(navi widget zsh)"
-eval "$(sheldon source)"
-eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
+declare -A eval_commands
+eval_commands[navi]="widget zsh"
+eval_commands[sheldon]="source"
+eval_commands[starship]="init zsh"
+eval_commands[zoxide]="init zsh"
+for bin args in "${(@kv)eval_commands}"; do
+  executable $bin && eval "$($bin ${=args})"
+done
