@@ -15,8 +15,8 @@ function find_vcs_root() {
         break
       fi
     done
-    local parent= parent="$(dirname "$dir")"
-    if [[ "$dir" = "$parent" ]]; then
+    local parent="$(dirname "$dir")"
+    if [[ "$dir" = "$parent" ]] || $found; then
       break
     fi
     dir="$parent"

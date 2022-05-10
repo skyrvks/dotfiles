@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Usage: time ZSH_PROFILE=1 zsh -i -c exit
-[[ $ZSH_PROFILE == "1" ]] && zmodload zsh/zprof
+[[ $ZSH_PROFILE == "1" ]] && zmodload zsh/zprof && trap 'zprof' EXIT
 
 DOTFILES_DIR="$(dirname "$(dirname "$(readlink -f "${(%):-%x}")")")"
 ZSHRC_DIR="${DOTFILES_DIR}/zsh"
@@ -32,19 +32,17 @@ setopt HIST_FIND_NO_DUPS
 autoload -U select-word-style
 select-word-style bash
 
-source "${ZSHRC_DIR}/alias.zsh"
-source "${ZSHRC_DIR}/plugin.zsh"
-
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/bin:$PATH"
-
-typeset -U path fpath
 
 # Completion
 # https://unix.stackexchange.com/questions/33255/how-to-define-and-load-your-own-shell-function-in-zsh
 fpath=("${ZSHRC_DIR}/completion" "${fpath[@]}")
 
+typeset -U path fpath
+
+source "${ZSHRC_DIR}/alias.zsh"
+source "${ZSHRC_DIR}/plugin.zsh"
+
 autoload -Uz compinit
 zsh-defer compinit 2>/dev/null || compinit
-
-[[ $ZSH_PROFILE == "1" ]] && zprof

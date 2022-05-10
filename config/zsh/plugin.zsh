@@ -20,9 +20,6 @@ export _ZO_FZF_OPTS='--height=40%'
 zle -N zi && bindkey '\ej' zi  # ALT-J
 zb() { cd "$(find_vcs_root)" }
 
-# Starship
-export STARSHIP_CONFIG="${DOTFILES_DIR}/starship/starship.toml"
-
 declare -A eval_commands
 eval_commands[navi]="widget zsh"
 eval_commands[sheldon]="source"
