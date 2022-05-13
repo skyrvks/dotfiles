@@ -104,12 +104,17 @@ nnoremap <m-H> <c-w>h
 nnoremap <m-L> <c-w>l
 nnoremap <m-J> <c-w>j
 nnoremap <m-K> <c-w>k
+inoremap <m-H> <c-o><c-w>h
+inoremap <m-L> <c-o><c-w>l
+inoremap <m-J> <c-o><c-w>j
+inoremap <m-K> <c-o><c-w>k
 
-command! -bang W w
-command! -bang Wq wq
-command! -bang WQ wq
 command! -bang Q q
 command! -bang QA qa
+command! -bang Qa qa
+command! -bang W w
+command! -bang WQ wq
+command! -bang Wq wq
 
 " Restore cursor to file position in previous editing session
 autocmd BufReadPost *

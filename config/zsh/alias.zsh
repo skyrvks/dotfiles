@@ -5,7 +5,7 @@ if executable exa; then
 else
   alias ls='ls --color=auto'
   alias ll='ls -l'
-  alias lr='ls -lrt'
+  alias lr='ls -lrth'
 fi
 
 alias cp='cp -i'

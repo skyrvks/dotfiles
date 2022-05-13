@@ -1,25 +1,26 @@
 " Plugin manager
-call plug#begin('~/.vim/plugged')
-
 function! Cond(cond, ...)
   let opts = get(a:000, 0, {})
   return a:cond ? opts : extend(opts, {'on': [], 'for': [] })
 endfunction
 
-Plug 'cespare/vim-toml'
-Plug 'easymotion/vim-easymotion', Cond(!has('nvim-0.5'))
-Plug 'honza/vim-snippets'
-Plug 'justinmk/vim-dirvish'
-Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
-Plug 'liuchengxu/vista.vim'
-Plug 'mhinz/vim-signify'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'phaazon/hop.nvim', Cond(has('nvim-0.5'))
-Plug 'preservim/nerdcommenter'
-Plug 'rust-lang/rust.vim'
-Plug 'tomasiser/vim-code-dark'
-Plug 'tomlion/vim-solidity'
+function! InitCommonPlugins()
+  Plug 'cespare/vim-toml'
+  Plug 'easymotion/vim-easymotion', Cond(!has('nvim-0.5'))
+  Plug 'honza/vim-snippets'
+  Plug 'justinmk/vim-dirvish'
+  Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
+  Plug 'liuchengxu/vista.vim'
+  Plug 'mhinz/vim-signify', Cond(has('patch-8.0.902'))
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'phaazon/hop.nvim', Cond(has('nvim-0.5'))
+  Plug 'preservim/nerdcommenter'
+  Plug 'rust-lang/rust.vim'
+  Plug 'tomasiser/vim-code-dark'
+endfunction
 
+call plug#begin('~/.vim/plugged')
+call InitCommonPlugins()
 call plug#end()
 
 function! s:init_vim_signify()
@@ -28,7 +29,10 @@ endfunction
 
 function s:init_vim_easymotion()
   if !has('nvim-0.5')
+    let g:EasyMotion_smartcase = 1
     nmap <leader>f <Plug>(easymotion-bd-w)
+    nmap <Leader>s <Plug>(easymotion-s2)
+    nmap <Leader>l <Plug>(easymotion-bd-jk)
   endif
 endfunction
 
@@ -106,10 +110,12 @@ endfunction
 
 function! s:init_nerdcommenter()
   " Only keep one comment keybinding
-  let g:NERDCreateDefaultMapping = 1
+  let g:NERDCreateDefaultMapping = 0
   let g:NERDSpaceDelims = 1
   let g:NERDDefaultAlign = 'left'
   let g:NERDCommentEmptyLines = 1
+  let g:NERDTrimTrailingWhitespace = 1
+  let g:NERDToggleCheckAllLines = 1
   nmap <leader>c<space> <Plug>NERDCommenterToggle
 endfunction
 
@@ -123,4 +129,7 @@ function! s:setup_plugins()
   call s:init_vim_signify()
 endfunction
 
-autocmd! VimEnter * call s:setup_plugins()
+augroup SetupCommonPlugins
+  autocmd!
+  autocmd! VimEnter * call s:setup_plugins()
+augroup END

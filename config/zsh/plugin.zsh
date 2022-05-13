@@ -1,9 +1,11 @@
 # Fzf
 if [[ $- == *i* ]]; then
-  source "$HOME/config/fzf/shell/completion.zsh"
-  source "$HOME/config/fzf/shell/key-bindings.zsh"
+  source "${DOTFILES_DIR}/fzf/shell/completion.zsh"
+  source "${DOTFILES_DIR}/fzf/shell/key-bindings.zsh"
+  # Use BFS by default to get better user experience in large codebase
   if executable bfs; then
     FZF_ALT_C_COMMAND="command bfs -nohidden -L -type d | cut -b3-"
+    FZF_CTRL_T_COMMAND="command bfs -nohidden | cut -b3-"
   fi
 fi
 
