@@ -15,7 +15,7 @@ fi
 export SHELDON_CONFIG_DIR="${DOTFILES_DIR}/sheldon"
 
 # Starship
-export STARSHIP_CONFIG="${DOTFILES_DIR}/starship/starship.toml"
+export STARSHIP_CONFIG="${DOTFILES_DIR}/starship.toml"
 
 # Zoxide
 export _ZO_FZF_OPTS='--height=40%'

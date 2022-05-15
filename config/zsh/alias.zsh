@@ -19,4 +19,5 @@ alias pad='pueue add'
 
 if executable chezmoi; then
   alias cfg='chezmoi'
+  alias cfg-cd='cd ~/.local/share/chezmoi'
 fi

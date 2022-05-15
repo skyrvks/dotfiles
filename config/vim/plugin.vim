@@ -96,9 +96,6 @@ endfunction
         \ 'coc-snippets',
         \ 'coc-vimlsp',
         \ ]
-
-  let local_bin_path = $HOME . "/.local/bin/"
-  call coc#config("rust-analyzer.server.path", local_bin_path . "rust-analyzer")
 endfunction
 
 function! s:init_hop_nvim()

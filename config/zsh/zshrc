@@ -19,6 +19,10 @@ else
   export EDITOR="vim"
 fi
 
+if [[ -f "${DOTFILES_DIR}/ripgreprc" ]] && [[ -o interactive ]]; then
+  export RIPGREP_CONFIG_PATH="${DOTFILES_DIR}/ripgreprc"
+fi
+
 # History
 # https://www.soberkoder.com/better-zsh-history/
 export HISTFILE="$HOME/.zsh_history"

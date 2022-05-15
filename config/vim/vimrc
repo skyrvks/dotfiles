@@ -46,30 +46,49 @@ set writebackup
 set swapfile
 set undolevels=1024
 if has('nvim')
-  set backupdir=~/.config/nvim/tmp
-  set backupext=.bak
-  set undodir=~/.config/nvim/undo
-  set undofile
-  silent! call mkdir(expand('~/.config/nvim/tmp'), "p", 0755)
-  silent! call mkdir(expand('~/.config/nvim/undo'), "p", 0755)
+  let s:backupdir = expand("~/.config/nvim/backup")
+  let s:undodir = expand("~/.config/nvim/undo")
 else
-  set backupdir=~/.vim/tmp
-  set backupext=.bak
-  set undodir=~/.vim/undo
-  set undofile
-  silent! call mkdir(expand('~/.vim/tmp'), "p", 0755)
-  silent! call mkdir(expand('~/.vim/undo'), "p", 0755)
+  let s:backupdir = expand("~/.config/vim/backup")
+  let s:undodir = expand("~/.config/vim/undo")
 endif
+let &backupdir = s:backupdir
+let &undodir = s:undodir
+silent! call mkdir(s:backupdir, "p", 0755)
+silent! call mkdir(s:undodir, "p", 0755)
+set backupext=.bck
+set undofile
 
-function! s:handle_large_file()
-  let large_file_size = 20 * 1024 * 1024
-  let file = expand('<afile>')
-  if getfsize(file) > large_file_size
-    setlocal nobackup
-    setlocal noswapfile
-  endif
-endfunction
-autocmd BufReadPre * call s:handle_large_file()
+augroup HandleLargeFile
+  function! s:handle_large_file()
+    let large_file_size = 20 * 1024 * 1024
+    if getfsize(expand('<afile>')) > large_file_size
+      setlocal nobackup
+      setlocal noswapfile
+    endif
+  endfunction
+  autocmd BufReadPre * call s:handle_large_file()
+augroup END
+
+" Let Alt work in vim
+if has('nvim') == 0 && has('gui_running') == 0
+  function! s:metacode(key)
+    exec "set <M-".a:key.">=\e".a:key
+  endfunc
+  for i in range(10)
+    call s:metacode(nr2char(char2nr('0') + i))
+  endfor
+  for i in range(26)
+    call s:metacode(nr2char(char2nr('a') + i))
+    call s:metacode(nr2char(char2nr('A') + i))
+  endfor
+  for c in [',', '.', '/', ';', '{', '}']
+    call s:metacode(c)
+  endfor
+  for c in ['?', ':', '-', '_', '+', '=', "'"]
+    call s:metacode(c)
+  endfor
+endif
 
 " Key mappings
 let g:mapleader = "\<Space>"
@@ -123,7 +142,7 @@ autocmd BufReadPost *
         \ endif
 
 " Automatically load .vimrc source when saved
-autocmd! BufWritePost vimrc source $MYVIMRC
+autocmd! BufWritePost *vimrc source $MYVIMRC
 
 execute 'source '.fnameescape(s:vimrc_dir.'/plugin.vim')
 try | colorscheme codedark | catch /.*/ | endtry
