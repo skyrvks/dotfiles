@@ -1,0 +1,54 @@
+# References:
+# https://sourceware.org/gdb/wiki/HomePage
+# https://sourceware.org/gdb/onlinedocs/gdb/index.html
+# https://github.com/hellogcc/100-gdb-tips
+#
+# Cheatsheet:
+# - Specify multiple commands in CLI
+#   gdb -ex 'break <num>' -ex 'run' --args ./exec
+# - Define a source path substitution rule
+#   set substitute-path <from> <to>
+python
+import platform
+
+def run(command):
+  return gdb.execute(command, to_string=True)
+
+print("--------------------------------------------------")
+gdb_major = run("print $_gdb_major").split()[2]
+gdb_minor = run("print $_gdb_minor").split()[2]
+print("GDB version:", gdb_major + "." + gdb_minor)
+print("GDB Python version:", platform.python_version())
+end
+
+define lock
+set scheduler-locking on
+echo set scheduler-locking on\n
+end
+
+define unlock
+set scheduler-locking off
+echo set scheduler-locking off\n
+end
+
+define break_anonymous
+break (anonymous namespace)::$arg0
+end
+
+set logging file .gdb.out
+set logging on
+set logging overwrite on
+set history save on
+set print pretty on
+set print object on
+set print elements 100
+set listsize 20
+set python print-stack full
+
+alias type = whatis
+
+python
+print("--------------------------------------------------")
+end
+
+# vim: set ft=gdb:
