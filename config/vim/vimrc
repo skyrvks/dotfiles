@@ -8,6 +8,7 @@ endif
 let s:dotfiles_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
 let s:vimrc_dir = s:dotfiles_dir.'/vim'
 
+set updatetime=1000
 set backspace=eol,start,indent
 set cursorline
 set display=lastline
@@ -90,11 +91,20 @@ if has('nvim') == 0 && has('gui_running') == 0
   endfor
 endif
 
+function! s:toggle_mouse()
+  if &mouse == ""
+    set mouse=a | echo "Mouse is on"
+  else
+    set mouse= | echo "Mouse is off"
+  endif
+endfunction
+
 " Key mappings
 let g:mapleader = "\<Space>"
+nmap <leader>m <cmd>call <SID>toggle_mouse()<cr>
 inoremap jk <ESC>
 nnoremap <leader>w <cmd>w<cr>
-nnoremap `n <cmd>noh<cr>
+nnoremap `n <cmd>nohlsearch<cr>
 inoremap {<cr> {<cr>}<esc>ko
 
 " Don't use Ex mode, use Q for formatting
@@ -127,6 +137,10 @@ inoremap <m-H> <c-o><c-w>h
 inoremap <m-L> <c-o><c-w>l
 inoremap <m-J> <c-o><c-w>j
 inoremap <m-K> <c-o><c-w>k
+tnoremap <m-H> <c-\><c-n><c-w>h
+tnoremap <m-L> <c-\><c-n><c-w>l
+tnoremap <m-J> <c-\><c-n><c-w>j
+tnoremap <m-K> <c-\><c-n><c-w>k
 
 command! -bang Q q
 command! -bang QA qa
@@ -140,9 +154,6 @@ autocmd BufReadPost *
         \ if line("'\"") > 1 && line("'\"") <= line("$") |
         \   exe "normal! g`\"" |
         \ endif
-
-" Automatically load .vimrc source when saved
-autocmd! BufWritePost *vimrc source $MYVIMRC
 
 execute 'source '.fnameescape(s:vimrc_dir.'/plugin.vim')
 try | colorscheme codedark | catch /.*/ | endtry

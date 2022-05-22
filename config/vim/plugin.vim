@@ -4,19 +4,30 @@ function! Cond(cond, ...)
   return a:cond ? opts : extend(opts, {'on': [], 'for': [] })
 endfunction
 
+function! DownloadVimClap()
+  if systemlist("uname -m")[0] == "x86_64"
+    call clap#installer#force_download()
+  else
+    call clap#installer#install(v:false)
+  endif
+endfunction
+
 function! InitCommonPlugins()
   Plug 'cespare/vim-toml'
   Plug 'easymotion/vim-easymotion', Cond(!has('nvim-0.5'))
+  Plug 'ggandor/lightspeed.nvim'
   Plug 'honza/vim-snippets'
   Plug 'justinmk/vim-dirvish'
-  Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary!' }
+  Plug 'liuchengxu/vim-clap', { 'do': { -> DownloadVimClap() } }
   Plug 'liuchengxu/vista.vim'
   Plug 'mhinz/vim-signify', Cond(has('patch-8.0.902'))
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'phaazon/hop.nvim', Cond(has('nvim-0.5'))
   Plug 'preservim/nerdcommenter'
   Plug 'rust-lang/rust.vim'
+  Plug 'sakhnik/nvim-gdb'
   Plug 'tomasiser/vim-code-dark'
+  Plug 'vim-utils/vim-husk'
 endfunction
 
 call plug#begin('~/.vim/plugged')
@@ -107,7 +118,7 @@ endfunction
 
 function! s:init_nerdcommenter()
   " Only keep one comment keybinding
-  let g:NERDCreateDefaultMapping = 0
+  let g:NERDCreateDefaultMappings = 0
   let g:NERDSpaceDelims = 1
   let g:NERDDefaultAlign = 'left'
   let g:NERDCommentEmptyLines = 1
@@ -116,10 +127,76 @@ function! s:init_nerdcommenter()
   nmap <leader>c<space> <Plug>NERDCommenterToggle
 endfunction
 
+" Example to enable nvim-gdb in CLI after s:setup_plugins() is invoked
+" nvim -c ':autocmd VimEnter * :GdbStart gdb -q ./a.out'
+function! s:init_nvim_gdb()
+  if !has('nvim') | return | endif
+  let g:nvimgdb_disable_start_keymaps = 1
+  let g:nvimgdb_use_cmake_to_find_executables = 0
+
+  nnoremap <leader>dd :GdbStart gdb -q<space>
+
+  " A hook function to set keymaps in the code window
+  function! NvimGdbSetKeymaps()
+    " First set up the stock keymaps
+    lua NvimGdb.i().keymaps:set()
+
+    function! s:nvimGdbGetTBufnr()
+      for nr in tabpagebuflist()
+        if getbufvar(nr, '&filetype') == 'nvimgdb'
+          return nr
+        endif
+      endfor
+    endfunction
+
+    function! s:nvimGdbGoTerminal()
+      call win_gotoid(win_findbuf(s:nvimGdbGetTBufnr())[0])
+      call feedkeys('i', 'in')
+    endfunction
+
+    set updatetime=50
+    nnoremap P <cmd>GdbEvalWord<cr>
+    nmap i <cmd>call <SID>nvimGdbGoTerminal()<cr>
+  endfunction
+
+  " A hook function to unset keymaps in the code window
+  function! NvimGdbUnsetKeymaps()
+    nunmap P
+    nunmap i
+    set updatetime=1000
+
+    " Final unset the stock keymaps
+    lua NvimGdb.i().keymaps:unset()
+  endfunction
+
+  " A hook function to set keymaps in the terminal window
+  function! NvimGdbSetTKeymaps()
+    " We're going to define single-letter keymaps, so don't try to define them
+    " in the terminal window.  The debugger CLI should continue accepting text commands.
+    " lua NvimGdb.i().keymaps:set_t()
+
+    tnoremap <silent> <buffer> <esc> <c-\><c-n>
+    tnoremap jk <c-\><c-n><c-w>p
+  endfunction
+
+  let g:nvimgdb_config_override = {
+        \ 'key_next': 'n',
+        \ 'key_step': 's',
+        \ 'key_continue': 'c',
+        \ 'key_breakpoint': 'b',
+        \ 'set_keymaps': 'NvimGdbSetKeymaps',
+        \ 'set_tkeymaps': "NvimGdbSetTKeymaps",
+        \ 'unset_keymaps': 'NvimGdbUnsetKeymaps',
+        \ 'termwin_command': 'belowright vnew',
+        \ 'codewin_command': 'vnew'
+        \ }
+endfunction
+
 function! s:setup_plugins()
   call s:init_coc_nvim()
   call s:init_hop_nvim()
   call s:init_nerdcommenter()
+  call s:init_nvim_gdb()
   call s:init_vim_clap()
   call s:init_vim_dirvish()
   call s:init_vim_easymotion()

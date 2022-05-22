@@ -36,8 +36,8 @@ break (anonymous namespace)::$arg0
 end
 
 set logging file .gdb.out
-set logging on
 set logging overwrite on
+set logging on
 set history save on
 set print pretty on
 set print object on
